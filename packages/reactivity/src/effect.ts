@@ -95,10 +95,11 @@ export function trigger(target: object, key?: unknown) {
 
 export function triggerEffects(dep: Dep) {
   // 把 dep 构建成一个数组
-  const effects = Array.isArray(dep) ? dep : [dep]
-  effects.forEach(effect => {
+  const effects = Array.isArray(dep) ? dep : [...dep]
+
+  for (const effect of effects) {
     triggerEffect(effect)
-  })
+  }
 }
 
 export function triggerEffect(effect: ReactiveEffect) {

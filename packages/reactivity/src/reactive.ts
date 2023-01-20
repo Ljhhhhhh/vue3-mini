@@ -1,4 +1,5 @@
 import { mutableHandlers } from './baseHandlers'
+import { isObject } from '../../shared/src'
 
 /**
  * 响应性 Map 缓存对象
@@ -38,4 +39,8 @@ function createReactiveObject(
   // 缓存代理对象
   proxyMap.set(target, proxy)
   return proxy
+}
+
+export const toReactive = <T extends unknown>(value: T): T => {
+  return isObject(value) ? reactive(value as object) : value
 }
