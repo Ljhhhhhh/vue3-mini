@@ -1,4 +1,7 @@
+import { ComputedRefImpl } from './computed'
 import { createDep, Dep } from './dep'
+
+export type EffectScheduler = (...args: any) => any
 
 /**
  * effect 函数
@@ -21,7 +24,13 @@ export let activeEffect: ReactiveEffect | undefined
  * 响应性触发依赖时的执行类
  */
 export class ReactiveEffect<T = any> {
-  constructor(public fn: () => T) {}
+  // 标识是否是 computed 的 effect
+  computed?: ComputedRefImpl<T>
+
+  constructor(
+    public fn: () => T,
+    public scheduler: EffectScheduler | null = null
+  ) {}
 
   run() {
     // 为 activeEffect 赋值
@@ -98,10 +107,22 @@ export function triggerEffects(dep: Dep) {
   const effects = Array.isArray(dep) ? dep : [...dep]
 
   for (const effect of effects) {
-    triggerEffect(effect)
+    if (effect.computed) {
+      triggerEffect(effect)
+    }
+  }
+
+  for (const effect of effects) {
+    if (!effect.computed) {
+      triggerEffect(effect)
+    }
   }
 }
 
 export function triggerEffect(effect: ReactiveEffect) {
-  effect.run()
+  if (effect.scheduler) {
+    effect.scheduler()
+  } else {
+    effect.run()
+  }
 }

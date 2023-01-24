@@ -1,7 +1,7 @@
 import { createDep, Dep } from './dep'
 import { activeEffect, trackEffects, triggerEffects } from './effect'
 import { toReactive } from './reactive'
-import { hasChanged } from '../../shared/src'
+import { hasChanged } from '@vue/shared'
 
 export interface Ref<T = any> {
   value: T
@@ -45,7 +45,7 @@ class RefImpl<T> {
   }
 }
 
-function triggerRefValue(ref) {
+export function triggerRefValue(ref) {
   if (ref.dep) {
     triggerEffects(ref.dep)
   }
