@@ -1,18 +1,28 @@
+import { extend } from '@vue/shared'
 import { ComputedRefImpl } from './computed'
 import { createDep, Dep } from './dep'
 
 export type EffectScheduler = (...args: any) => any
+export interface ReactiveEffectOptions {
+  lazy?: boolean
+  scheduler?: EffectScheduler
+}
 
 /**
  * effect 函数
  * @param fn 执行方法
  * @returns 以 ReactiveEffect 实例为 this 的执行函数
  */
-export function effect<T = any>(fn: () => T) {
+export function effect<T = any>(fn: () => T, options?: ReactiveEffectOptions) {
   // 生成 ReactiveEffect 实例
   const _effect = new ReactiveEffect(fn)
-  // 执行 run 函数
-  _effect.run()
+  if (options) {
+    extend(_effect, options)
+  }
+  if (!options || !options.lazy) {
+    // 执行 run 函数
+    _effect.run()
+  }
 }
 
 /**
@@ -38,6 +48,10 @@ export class ReactiveEffect<T = any> {
 
     // 执行 fn 函数
     return this.fn()
+  }
+
+  stop() {
+    console.log('stop 个啥')
   }
 }
 
